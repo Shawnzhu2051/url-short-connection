@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>URL Shortener</title>
+</head>
+<html>
+	<body>
+		<h1>
+			My URL Shortener
+		</h1>
+		<form action="long2short" id="long2shortForm" method="post">
+	  		Long to short: 
+	  		<input type="text" name="longUrl" />
+  			<button type="submit" onclick="l2sformSubmit()" value="Submit"></button>
+  		</form>
+  		<br>
+  		<form action="short2long" id="short2longForm" method="post">
+  			Short to long: 
+  			<input type="text" name="shortUrl" />
+  			<button type="submit" onclick="s2lformSubmit()" name="Submit" ></button>
+		</form>
+	</body>
+</html>
+
+<script type="text/javascript">
+	function l2sformSubmit()
+	{
+		var form = document.getElementById('long2shortForm');
+		return true
+  	}
+  	function s2lformSubmit()
+	{
+		var form = document.getElementById('short2longForm');
+		return true
+  	}
+
+</script>

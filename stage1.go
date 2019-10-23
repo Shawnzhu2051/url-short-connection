@@ -1,9 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"utils/URLShortener"
+)
+
+const (
+	FIRST_ELEMENT = 0
+	SUCCESS_CODE = 200
+	INCORRECT_URL = "Incorrect url"
 )
 
 var (
@@ -14,6 +20,13 @@ func main() {
 	long2shortMap = make(map[string]string)
 	router := gin.Default()
 
+	router.LoadHTMLFiles("templates/index.html")
+	router.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+		})
+	})
+
 	router.POST("/long2short",func(c *gin.Context){
 		longUrl := c.DefaultPostForm("longUrl", "localhost")
 		var ret string
@@ -22,32 +35,28 @@ func main() {
 		} else {
 			val, err := URLShortener.Transform(longUrl);
 			if err != nil {
-				ret = "Incorrect url"
+				ret = INCORRECT_URL
 			} else {
-				ret = val[0]
-				fmt.Println(longUrl)
-				fmt.Println(ret)
+				ret = val[FIRST_ELEMENT]
 				long2shortMap[longUrl] = ret
 			}
 		}
-		c.JSON(200, gin.H{
-			"status":  "posted",
+		c.JSON(SUCCESS_CODE, gin.H{
 			"shortUrl":    ret,
 		})
 	})
 
 	router.POST("/short2long",func(c *gin.Context){
 		shortUrl := c.DefaultPostForm("shortUrl", "localhost")
-		ret := "Unrecognized url"
+		ret := INCORRECT_URL
 		for key, val := range long2shortMap {
 			if val == shortUrl {
 				ret = key;
 			}
 		}
-		c.JSON(200, gin.H{
-			"status":  "posted",
+		c.JSON(SUCCESS_CODE, gin.H{
 			"longUrl":    ret,
 		})
 	})
-	router.Run(":8080") // listen and serve on 0.0.0.0:8080
+	router.Run() // listen and serve on 0.0.0.0:8080
 }
