@@ -1,37 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>URL Shortener</title>
-</head>
-<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>URL Shortener</title>
+		<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://cdn.auth0.com/js/auth0/9.0/auth0.min.js"></script>
+  		<script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
+  		<script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
+  		<script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+  		<script type="text/babel" src="assets/js/app.jsx"></script>
+  		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+
 	<body>
-		<h1>
-			My URL Shortener
-		</h1>
-		<form action="long2short" id="long2shortForm" method="post">
-	  		Long to short: 
-	  		<input type="text" name="longUrl" />
-  			<button type="submit" onclick="l2sformSubmit()" value="Submit"></button>
-  		</form>
-  		<br>
-  		<form action="short2long" id="short2longForm" method="post">
-  			Short to long: 
-  			<input type="text" name="shortUrl" />
-  			<button type="submit" onclick="s2lformSubmit()" name="Submit" ></button>
-		</form>
+		<div id="app"></div>
 	</body>
 </html>
-
-<script type="text/javascript">
-	function l2sformSubmit()
-	{
-		var form = document.getElementById('long2shortForm');
-		return true
-  	}
-  	function s2lformSubmit()
-	{
-		var form = document.getElementById('short2longForm');
-		return true
-  	}
-
-</script>

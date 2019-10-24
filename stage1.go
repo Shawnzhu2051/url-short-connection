@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"utils/URLShortener"
 )
@@ -19,9 +20,16 @@ var (
 func main() {
 	long2shortMap = make(map[string]string)
 	router := gin.Default()
+	router.Static("/assets", "./assets")
+
 
 	router.LoadHTMLFiles("templates/index.html")
-	router.GET("/index", func(c *gin.Context) {
+	router.GET("/", func(c *gin.Context) {
+		if pusher := c.Writer.Pusher(); pusher != nil {
+			if err := pusher.Push("/assets/app.jsx", nil); err != nil {
+				log.Printf("Failed to push: %v", err)
+			}
+		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title": "Main website",
 		})
@@ -43,6 +51,7 @@ func main() {
 		}
 		c.JSON(SUCCESS_CODE, gin.H{
 			"shortUrl":    ret,
+			"status": SUCCESS_CODE,
 		})
 	})
 
@@ -56,6 +65,7 @@ func main() {
 		}
 		c.JSON(SUCCESS_CODE, gin.H{
 			"longUrl":    ret,
+			"status": SUCCESS_CODE,
 		})
 	})
 	router.Run() // listen and serve on 0.0.0.0:8080
