@@ -9,7 +9,8 @@ class App extends React.Component {
 class Home extends React.Component {
     constructor() {
         super();
-        this.long2shortURL = "http://localhost:8080/long2short"
+        // To avoid CROS policy problem, you can change localhost to your own IP address.
+        this.long2shortURL = "http://localhost:8080/long2short" 
         this.short2longURL = "http://localhost:8080/short2long"
         this.state = {
             longURLValue: '',
