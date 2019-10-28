@@ -3,10 +3,20 @@
 使用Siege来进行压力测试，测试指令：
 
 ```bash
-siege -c 1000 -t 1M -i -b -f urlTest.txt
+siege -c [concurrency number] -t 1M -i -f urlTest.txt
 ```
 
+`-c` 指定并发数
 
+`-t` 指定运行时间1分钟 
+
+`-i` 随机抽取url
+
+`-f` 使用urlTest.txt文件
+
+Vulter服务器性能如下：
+
+![](./image/quality.png)
 
 ### Stage 1
 
@@ -30,10 +40,13 @@ siege -c 1000 -t 1M -i -b -f urlTest.txt
 
 | ID   | Setting Concurrency | Actual Concurrency | Availability | Transactions (hits) | Response time (secs) | Transaction rate (trans/sec) |
 | ---- | ------------------- | ------------------ | ------------ | ------------------- | -------------------- | ---------------------------- |
-| 1    |                     |                    |              |                     |                      |                              |
-| 2    |                     |                    |              |                     |                      |                              |
-| 3    |                     |                    |              |                     |                      |                              |
-| 4    |                     |                    |              |                     |                      |                              |
+| 1    | 10                  |                    |              |                     |                      |                              |
+| 2    | 100                 |                    |              |                     |                      |                              |
+| 3    | 250                 |                    |              |                     |                      |                              |
+| 4    | 500                 |                    |              |                     |                      |                              |
 | 5    | 1000                | 380.9              | 90.59%       | 6868                | 3.34                 | 114.2                        |
 
-Too many connections
+#### 结果分析
+
+* 因为服务器性能有限，在链接MySQL数据库时抛出了`Too many connections`错误，此处为服务器性能的瓶颈。
+
