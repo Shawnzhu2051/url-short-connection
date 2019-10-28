@@ -13,6 +13,11 @@ const (
 	FIRST_ELEMENT = 0
 	SUCCESS_CODE = 200
 	INCORRECT_URL = "Incorrect url"
+	LONG_URL = "longUrl"
+	SHORT_URL = "shortUrl"
+	STATUS = "status"
+	DEFAULT_POST_FORM = "localhost"
+	LOG_FILE_NAME = "MyURLShortenerLog.log"
 )
 
 var (
@@ -21,7 +26,7 @@ var (
 
 func main() {
 
-	f, _ := os.Create("MyURLShortenerLog.log")
+	f, _ := os.Create(LOG_FILE_NAME)
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	long2shortMap = make(map[string]string)
@@ -43,13 +48,11 @@ func getIndexStg1(c *gin.Context) {
 			log.Printf("Failed to push: %v", err)
 		}
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"title": "Main website",
-	})
+	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
 func longToShortTransformStg1(c *gin.Context) {
-	longUrl := c.DefaultPostForm("longUrl", "localhost")
+	longUrl := c.DefaultPostForm(LONG_URL, DEFAULT_POST_FORM)
 	var ret string
 	if val, ok := long2shortMap[longUrl]; ok {
 		ret = val
@@ -63,13 +66,13 @@ func longToShortTransformStg1(c *gin.Context) {
 		}
 	}
 	c.JSON(SUCCESS_CODE, gin.H{
-		"shortUrl":    ret,
-		"status": SUCCESS_CODE,
+		SHORT_URL:    ret,
+		STATUS: SUCCESS_CODE,
 	})
 }
 
 func shortToLongTransformStg1(c *gin.Context) {
-	shortUrl := c.DefaultPostForm("shortUrl", "localhost")
+	shortUrl := c.DefaultPostForm(SHORT_URL, DEFAULT_POST_FORM)
 	ret := INCORRECT_URL
 	for key, val := range long2shortMap {
 		if val == shortUrl {
@@ -77,7 +80,7 @@ func shortToLongTransformStg1(c *gin.Context) {
 		}
 	}
 	c.JSON(SUCCESS_CODE, gin.H{
-		"longUrl":    ret,
-		"status": SUCCESS_CODE,
+		LONG_URL:    ret,
+		STATUS: SUCCESS_CODE,
 	})
 }

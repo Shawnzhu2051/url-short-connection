@@ -24,6 +24,13 @@ const (
 	INCORRECT_URL = "Incorrect url"
 	QUERY_LONG_URL = "long_url = ?"
 	QUERY_SHORT_URL = "short_url = ?"
+	LONG_URL = "longUrl"
+	SHORT_URL = "shortUrl"
+	STATUS = "status"
+	DEFAULT_POST_FORM = "localhost"
+	LOG_FILE_NAME = "MyURLShortenerLog.log"
+	DB_TYPE = "mysql"
+	DB_ARGS = "root:******@tcp(127.0.0.1:3306)/gorm?charset=utf8&parseTime=True&loc=Local"
 )
 
 
@@ -34,14 +41,14 @@ var (
 
 func main() {
 
-	db, err = gorm.Open("mysql", "root:Mysqldemima1@tcp(127.0.0.1:3306)/gorm?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open(DB_TYPE, DB_ARGS)
 	if err != nil {
 		log.Printf("Failed to connect database: %v", err)
 	}
 	defer db.Close()
 	db.AutoMigrate(&UrlPair{})
 
-	f, _ := os.Create("MyURLShortenerLog.log")
+	f, _ := os.Create(LOG_FILE_NAME)
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	router := gin.Default()
@@ -61,15 +68,13 @@ func getIndexStg2(c *gin.Context) {
 			log.Printf("Failed to push: %v", err)
 		}
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"title": "My URL Shortener",
-	})
+	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
 func longToShortTransformStg2(c *gin.Context) {
 	var urlPair UrlPair;
 	ret := INCORRECT_URL
-	longUrl := c.DefaultPostForm("longUrl", "localhost")
+	longUrl := c.DefaultPostForm(LONG_URL, DEFAULT_POST_FORM)
 
 	err := db.Where(QUERY_LONG_URL, longUrl).First(&urlPair).Error;
 	if err != nil {
@@ -86,15 +91,15 @@ func longToShortTransformStg2(c *gin.Context) {
 		ret = urlPair.ShortUrl
 	}
 	c.JSON(SUCCESS_CODE, gin.H{
-		"shortUrl":    ret,
-		"status": SUCCESS_CODE,
+		SHORT_URL:    ret,
+		STATUS: SUCCESS_CODE,
 	})
 }
 
 func shortToLongTransformStg2(c *gin.Context) {
 	var urlPair UrlPair
 	var ret string
-	shortUrl := c.DefaultPostForm("shortUrl", "localhost")
+	shortUrl := c.DefaultPostForm(SHORT_URL, DEFAULT_POST_FORM)
 
 	err := db.Where(QUERY_SHORT_URL, shortUrl).First(&urlPair).Error;
 	if err != nil {
@@ -103,7 +108,7 @@ func shortToLongTransformStg2(c *gin.Context) {
 		ret = urlPair.LongUrl
 	}
 	c.JSON(SUCCESS_CODE, gin.H{
-		"longUrl":    ret,
-		"status": SUCCESS_CODE,
+		LONG_URL:    ret,
+		STATUS: SUCCESS_CODE,
 	})
 }
