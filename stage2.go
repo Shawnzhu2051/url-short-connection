@@ -13,9 +13,9 @@ import (
 )
 
 type UrlPair struct {
-	ID uuid.UUID `json:"id"`
-	LongUrl string `json:"longUrl"`
-	ShortUrl string `json:"shortUrl"`
+	ID uuid.UUID
+	LongUrl string `gorm:"unique"`
+	ShortUrl string `gorm:"unique"`
 }
 
 const (
