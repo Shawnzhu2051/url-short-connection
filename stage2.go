@@ -30,7 +30,7 @@ const (
 	DEFAULT_POST_FORM = "localhost"
 	LOG_FILE_NAME = "MyURLShortenerLog.log"
 	DB_TYPE = "mysql"
-	DB_ARGS = "root:******@tcp(127.0.0.1:3306)/gorm?charset=utf8&parseTime=True&loc=Local"
+	DB_ARGS = "****:******@tcp(127.0.0.1:3306)/****?charset=utf8&parseTime=True&loc=Local"
 )
 
 
