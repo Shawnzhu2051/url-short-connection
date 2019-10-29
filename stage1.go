@@ -39,12 +39,14 @@ func main() {
 	router.POST("/long2short", longToShortTransformStg1)
 	router.POST("/short2long", shortToLongTransformStg1)
 
-	router.Run() // listen and serve on 0.0.0.0:8080
+	router.Run()
 }
 
 func getIndexStg1(c *gin.Context) {
-	if pusher := c.Writer.Pusher(); pusher != nil {
-		if err := pusher.Push("/assets/app.jsx", nil); err != nil {
+	pusher := c.Writer.Pusher()
+	if pusher != nil {
+		err := pusher.Push("/assets/app.jsx", nil)
+		if err != nil {
 			log.Printf("Failed to push: %v", err)
 		}
 	}
@@ -54,10 +56,11 @@ func getIndexStg1(c *gin.Context) {
 func longToShortTransformStg1(c *gin.Context) {
 	longUrl := c.DefaultPostForm(LONG_URL, DEFAULT_POST_FORM)
 	var ret string
-	if val, ok := long2shortMap[longUrl]; ok {
+	val, ok := long2shortMap[longUrl]
+	if ok {
 		ret = val
 	} else {
-		val, err := URLShortener.Transform(longUrl);
+		val, err := URLShortener.Transform(longUrl)
 		if err != nil {
 			ret = INCORRECT_URL
 		} else {
@@ -76,7 +79,7 @@ func shortToLongTransformStg1(c *gin.Context) {
 	ret := INCORRECT_URL
 	for key, val := range long2shortMap {
 		if val == shortUrl {
-			ret = key;
+			ret = key
 		}
 	}
 	c.JSON(SUCCESS_CODE, gin.H{

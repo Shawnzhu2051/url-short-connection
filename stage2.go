@@ -29,24 +29,25 @@ const (
 	STATUS = "status"
 	DEFAULT_POST_FORM = "localhost"
 	LOG_FILE_NAME = "MyURLShortenerLog.log"
+	//Mysql arguments
 	DB_TYPE = "mysql"
 	DB_ARGS = "****:******@tcp(127.0.0.1:3306)/****?charset=utf8&parseTime=True&loc=Local"
 )
 
 
 var (
-	db *gorm.DB
+	mysqlClient *gorm.DB
 	err error
 )
 
 func main() {
 
-	db, err = gorm.Open(DB_TYPE, DB_ARGS)
+	mysqlClient, err = gorm.Open(DB_TYPE, DB_ARGS)
 	if err != nil {
 		log.Printf("Failed to connect database: %v", err)
 	}
-	defer db.Close()
-	db.AutoMigrate(&UrlPair{})
+	defer mysqlClient.Close()
+	mysqlClient.AutoMigrate(&UrlPair{})
 
 	f, _ := os.Create(LOG_FILE_NAME)
 	gin.DefaultWriter = io.MultiWriter(f)
@@ -59,12 +60,14 @@ func main() {
 	router.POST("/long2short", longToShortTransformStg2)
 	router.POST("/short2long", shortToLongTransformStg2)
 
-	router.Run() // listen and serve on 0.0.0.0:8080
+	router.Run()
 }
 
 func getIndexStg2(c *gin.Context) {
-	if pusher := c.Writer.Pusher(); pusher != nil {
-		if err := pusher.Push("/assets/app.jsx", nil); err != nil {
+	pusher := c.Writer.Pusher()
+	if pusher != nil {
+		err := pusher.Push("/assets/app.jsx", nil)
+		if err != nil {
 			log.Printf("Failed to push: %v", err)
 		}
 	}
@@ -72,20 +75,20 @@ func getIndexStg2(c *gin.Context) {
 }
 
 func longToShortTransformStg2(c *gin.Context) {
-	var urlPair UrlPair;
+	var urlPair UrlPair
 	ret := INCORRECT_URL
 	longUrl := c.DefaultPostForm(LONG_URL, DEFAULT_POST_FORM)
 
-	err := db.Where(QUERY_LONG_URL, longUrl).First(&urlPair).Error;
+	err := mysqlClient.Where(QUERY_LONG_URL, longUrl).First(&urlPair).Error
 	if err != nil {
-		val, err := URLShortener.Transform(longUrl);
+		val, err := URLShortener.Transform(longUrl)
 		if err != nil {
 			log.Printf("Failed to transform url: %v", err)
 		} else {
 			ret = val[FIRST_ELEMENT]
-			u1, _ := uuid.NewV4()
-			urlPair = UrlPair{u1 ,longUrl, ret}
-			db.Create(&urlPair)
+			id, _ := uuid.NewV4()
+			urlPair = UrlPair{id ,longUrl, ret}
+			mysqlClient.Create(&urlPair)
 		}
 	} else {
 		ret = urlPair.ShortUrl
@@ -101,7 +104,7 @@ func shortToLongTransformStg2(c *gin.Context) {
 	var ret string
 	shortUrl := c.DefaultPostForm(SHORT_URL, DEFAULT_POST_FORM)
 
-	err := db.Where(QUERY_SHORT_URL, shortUrl).First(&urlPair).Error;
+	err := mysqlClient.Where(QUERY_SHORT_URL, shortUrl).First(&urlPair).Error
 	if err != nil {
 		ret = INCORRECT_URL
 	} else {
