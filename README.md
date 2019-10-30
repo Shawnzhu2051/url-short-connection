@@ -1,6 +1,6 @@
 # URL 短连接系统
 
-##Introduction
+#### Introduction
 
 用Go实现一个URL短连接系统，类似于 http://dwz.cn/ ，采用 https://github.com/gin-gonic/gin 这个框架
 
@@ -9,7 +9,7 @@
 3. 第3阶段为了提高性能，将热点url放到Redis中缓存，全量数据仍然放到MySQL中 https://github.com/go-redis/redis
 4. 每一阶段实现完，做压测、性能调优。没有实验环境的可以尝试使用阿里云
 
-#####Tips
+#### Tips
 
 1. 因为go-redis目前官方只支持使用go module进行管理，如果有混用govendor的话，可能会导致本地自定义的`utils/URLShortener`包无法使用。可以在`go.mod`中添加`replace utils/URLShortener v0.0.0 => /root/go/src/github.com/shawnzhu/url-short-connection/utils/URLShortener`来获取本地自定义包。
 
@@ -75,5 +75,6 @@ Vulter服务器性能如下：
 
 * 在GET index页面时，直接在前端利用CDN加载React库，耗费了大量的时间
 * 因为Siege的最大并发数为1000，无法进行1000以上的测试
-* 在stage3使用redis后，性能较之前有一定提升。但效果并不特别显著。猜测是因为1000的并发量过小，没够体现出redis的特点。
+* 在分别使用MySQL和redis后，性能较之前有一定提升。但效果并不特别显著。猜测是因为1000的并发量过小，没够体现出MySQL和redis的优点。
+* Siege的测试结果不稳定，反复测试时结果相差较大，此处取的多次测试中最好的结果。猜测是因为Vulter服务器位于境外，网络不稳定造成的。
 
