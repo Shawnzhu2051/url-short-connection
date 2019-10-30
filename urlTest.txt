@@ -1,3 +1,4 @@
+http://45.77.114.214:8080/
 http://45.77.114.214:8080/long2short POST longUrl=www.baidu.com
 http://45.77.114.214:8080/long2short POST longUrl=www.google.com
 http://45.77.114.214:8080/short2long POST shortUrl=6fQrmq
